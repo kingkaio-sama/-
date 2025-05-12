@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2D 캐릭터 이상형 월드컵</title>
+  <style>
+    body { font-family: sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px; }
+    h1 { margin-bottom: 30px; }
+    .round { font-size: 20px; margin-bottom: 20px; font-weight: bold; }
+    .matchup { display: flex; justify-content: center; gap: 40px; margin-top: 30px; }
+    .matchup img { width: 250px; height: 250px; object-fit: cover; cursor: pointer; border: 5px solid transparent; }
+    .matchup img:hover { border-color: #3498db; }
+    .result { font-size: 24px; font-weight: bold; margin-top: 40px; }
+  </style>
+</head>
+<body>
+  <h1>2D 캐릭터 이상형 월드컵</h1>
+  <div class="round" id="round">16강</div>
+  <div id="matchup" class="matchup"></div>
+  <div id="result" class="result"></div>
+
+  <script>
+    const images = [
+      'new_character_1.jpeg', 'new_character_2.jpeg', 'new_character_3.jpeg',
+      'new_character_4.jpeg', 'new_character_5.jpeg', 'new_character_6.jpeg',
+      'new_character_7.jpeg', 'new_character_8.jpeg', 'new_character_9.jpeg',
+      'new_character_10.jpeg', 'new_character_11.jpeg', 'new_character_12.jpeg',
+      'new_character_13.jpeg', 'new_character_14.jpeg', 'new_character_15.jpeg',
+      '_FJ3oURz_400x400.jpg'
+    ];
+
+    let currentRound = [];
+    let nextRound = [];
+    let matchIndex = 0;
+    let roundNumber = 16;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function startTournament() {
+      currentRound = shuffle(images.slice());
+      nextRound = [];
+      matchIndex = 0;
+      roundNumber = 16;
+      showMatch();
+    }
+
+    function showMatch() {
+      const matchupDiv = document.getElementById('matchup');
+      const resultDiv = document.getElementById('result');
+      const roundText = document.getElementById('round');
+      matchupDiv.innerHTML = '';
+      resultDiv.textContent = '';
+
+      if (currentRound.length === 1) {
+        roundText.textContent = '우승자!';
+        const img = document.createElement('img');
+        img.src = currentRound[0];
+        img.style.width = '300px';
+        matchupDiv.appendChild(img);
+        return;
+      }
+
+      if (matchIndex >= currentRound.length) {
+        // 다음 라운드로 진출
+        currentRound = nextRound.slice();
+        nextRound = [];
+        matchIndex = 0;
+        roundNumber = currentRound.length;
+        showMatch();
+        return;
+      }
+
+      roundText.textContent = roundNumber === 2 ? '결승' : `${roundNumber}강`;
+
+      const first = currentRound[matchIndex];
+      const second = currentRound[matchIndex + 1];
+      matchIndex += 2;
+
+      [first, second].forEach((src) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.onclick = () => {
+          nextRound.push(src);
+          showMatch();
+        };
+        matchupDiv.appendChild(img);
+      });
+    }
+
+    startTournament();
+  </script>
+</body>
+</html>
